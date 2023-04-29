@@ -384,19 +384,14 @@ function crearEntidad(){
 
 function editProduct(form){
     let fieldset=form.getElementsByTagName('fieldset')[0]
-    let nombre= fieldset.getElementsByTagName('input')[0].value
-    let nacimiento = fieldset.getElementsByTagName('input')[1].value
-    let muerte = fieldset.getElementsByTagName('input')[2].value
-    let imagen = fieldset.getElementsByTagName('input')[3].value
-    let wikipedia  = fieldset.getElementsByTagName('input')[4].value
 
     products[products.length] = {
         id: products[products.length-1].id+1,
-        name: nombre,
-        birth: nacimiento,
-        death: muerte,
-        image: imagen,
-        wiki: wikipedia
+        name: fieldset.getElementsByTagName('input')[0].value,
+        birth: fieldset.getElementsByTagName('input')[1].value,
+        death: fieldset.getElementsByTagName('input')[2].value,
+        image: fieldset.getElementsByTagName('input')[3].value,
+        wiki: fieldset.getElementsByTagName('input')[4].value
     }
 
     
