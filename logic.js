@@ -156,12 +156,14 @@ function readElement(elemento){
     nav.innerHTML='<input type="button" name="inicio" value="Inicio" onclick="readIndex();">'
 
     let main = document.getElementsByTagName('main')[0]
-    death = elemento.death ? '<h3>Fallecimiento: '+elemento.death.day+' de '+elemento.death.month+' de '+elemento.death.year+'</h3>':''
+    let birthday = new Date(elemento.birth)
+    let deathday = new Date(elemento.death)
+    death = !(deathday == 'Invalid Date') ? '<h3>Fallecimiento: '+deathday.getDay()+' de '+(deathday.toLocaleString('default', { month: 'long' }))+' de '+deathday.getFullYear()+'</h3>':''
     main.innerHTML=''
     main.innerHTML=
     '<section>'+
         '<h2>'+elemento.name+'</h2>'+
-        '<h3>Nacimiento: '+elemento.birth.day+' de '+elemento.birth.month+' de '+elemento.birth.year+'</h3>'+
+        '<h3>Nacimiento: '+birthday.getDay()+' de '+birthday.toLocaleString('default', { month: 'long' })+' de '+birthday.getFullYear()+'</h3>'+
         death+
         '<img src="'+elemento.image+'" alt="'+elemento.name+'" width="300" height="250">'+
         '<div><table id="productos" style="margin: 0px;">'+
@@ -336,11 +338,13 @@ function crearProducto(){
     create('Producto')
     
     let fieldset = document.getElementsByTagName('fieldset')[0]
+
     fieldset.innerHTML+='<h3 style="text-align: left; color: yellow;">Participantes<h3>'
     let peopleList = document.createElement('ul')
     peopleList.setAttribute('id','peopleList')
     for(person of creators){
         let listItem = document.createElement('li')
+        listItem.setAttribute('id', person.id)
         let label = document.createElement('label')
         label.setAttribute('for', person.id)
         label.appendChild(document.createTextNode(person.name))
@@ -358,6 +362,7 @@ function crearProducto(){
     entitiesList.setAttribute('id','entitiesList')
     for(entity of entities){
         let listItem = document.createElement('li')
+        listItem.setAttribute('id', entity.id)
         let label = document.createElement('label')
         label.setAttribute('for', entity.id)
         label.appendChild(document.createTextNode(entity.name))
@@ -371,11 +376,12 @@ function crearProducto(){
     fieldset.appendChild(entitiesList)
 
     fieldset.innerHTML+='<input type="submit" value="Enviar";">'
-    let form = document.getElementById('creationForm')
 }
 
 function crearCreador(){
     create('Creador')
+    let fieldset = document.getElementsByTagName('fieldset')[0]
+    fieldset.innerHTML+='<input type="submit" value="Enviar";">'
 }
 
 function crearEntidad(){
@@ -384,16 +390,46 @@ function crearEntidad(){
 
 function editProduct(form){
     let fieldset=form.getElementsByTagName('fieldset')[0]
-
+    let peopleList = document.getElementById('peopleList')
+    let checkedPeople = []
+    for(item of peopleList.getElementsByTagName('li')){
+        if(item.getElementsByTagName('input')[0].checked){
+            checkedPeople[checkedPeople.length]= +item.id
+        }
+    }
+    let entitiesList = document.getElementById('entitiesList')
+    let checkedEntities = []
+    for(item of entitiesList.getElementsByTagName('li')){
+        if(item.getElementsByTagName('input')[0].checked){
+            checkedEntities[checkedEntities.length]= +item.id
+        }
+    }
     products[products.length] = {
         id: products[products.length-1].id+1,
         name: fieldset.getElementsByTagName('input')[0].value,
         birth: fieldset.getElementsByTagName('input')[1].value,
         death: fieldset.getElementsByTagName('input')[2].value,
         image: fieldset.getElementsByTagName('input')[3].value,
-        wiki: fieldset.getElementsByTagName('input')[4].value
+        wiki: fieldset.getElementsByTagName('input')[4].value,
+        people: checkedPeople,
+        entities: checkedEntities
     }
-
-    
     window.localStorage.setItem('products', JSON.stringify(products))
+}
+
+function editPerson(form){
+    let fieldset=form.getElementsByTagName('fieldset')[0]
+    creators[creators.length] = {
+        id: products[creators.length-1].id+1,
+        name: fieldset.getElementsByTagName('input')[0].value,
+        birth: fieldset.getElementsByTagName('input')[1].value,
+        death: fieldset.getElementsByTagName('input')[2].value,
+        image: fieldset.getElementsByTagName('input')[3].value,
+        wiki: fieldset.getElementsByTagName('input')[4].value,
+    }
+    window.localStorage.setItem('creators', JSON.stringify(creators))
+}
+
+function editEntity(form){
+    
 }
