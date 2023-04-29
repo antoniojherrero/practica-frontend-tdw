@@ -18,6 +18,7 @@ label{
 input {
 	color: black;
 	background-color: white;
+	position: static;
 }
 img{
 	background-color: white;
@@ -37,9 +38,8 @@ footer{
 }
 table{
 	font-size: large;
-	text-align: center;
-	width: 40%;
-	margin: 0% 30%;
+	width: 90%;
+	margin: 0% 5%;
 }
 caption{
 	color: grey;
