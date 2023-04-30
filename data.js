@@ -31,7 +31,7 @@ if(!window.localStorage.getItem("users")){
     ])
     window.localStorage.setItem("products", products)
   }
-  if(!window.localStorage.getItem("creators")){
+  if(!window.localStorage.getItem("people")){
     let people = JSON.stringify([
       {
         id: 1,

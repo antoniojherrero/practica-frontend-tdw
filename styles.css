@@ -28,7 +28,6 @@ main {
 }
 section{
 	width: 33%;
-	max-width: 33%;
 	text-align: center;
 	float: left;
 }
@@ -38,8 +37,8 @@ footer{
 }
 table{
 	font-size: large;
-	width: 90%;
-	margin: 0% 5%;
+	margin-right: auto;
+	margin-left: auto;
 }
 caption{
 	color: grey;

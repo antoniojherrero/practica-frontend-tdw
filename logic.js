@@ -171,7 +171,7 @@ function readElement(elemento){
     death = !(deathday == 'Invalid Date') ? '<h3>Fallecimiento: '+deathday.getDay()+' de '+(deathday.toLocaleString('default', { month: 'long' }))+' de '+deathday.getFullYear()+'</h3>':''
     main.innerHTML=''
     main.innerHTML=
-    '<section>'+
+    '<section style="width: 40%;">'+
         '<h2>'+elemento.name+'</h2>'+
         '<h3>Nacimiento: '+birthday.getDay()+' de '+birthday.toLocaleString('default', { month: 'long' })+' de '+birthday.getFullYear()+'</h3>'+
         death+
@@ -181,31 +181,30 @@ function readElement(elemento){
         '<table id="entidades" style="margin: 0px;">'+
         '</table></div>'+
     '</section>'
-    main.innerHTML+='<section><iframe src="'+elemento.wiki+'" width=700 height=500></section>'
+    main.innerHTML+='<section style="width: 60%;"><iframe src="'+elemento.wiki+'" width=700 height=500></section>'
 
 }
 
 function readProduct(){
-    let elemento
-    for(item of products){
-        if(item.id == this.id){
-            elemento=item
-            break
-        }
-    }
+    let elemento = products[this.parentElement.id]
+    
     readElement(elemento)
 
     let main = document.getElementsByTagName('main')[0]
     let footer = document.createElement('footer')
-    let peopleTitle = document.createElement('h2')
-    peopleTitle.appendChild(document.createTextNode('People'))
-    footer.appendChild(peopleTitle)
+    footer.style.float='left'
+    footer.innerHTML='<h2 style="text-align: center;">Personas<h2>'
     if(elemento.people.length!=0){
+        let i = 0
+        let tablaPersonas = document.createElement('table')
+        let row = document.createElement('tr')
         for(person of elemento.people){
             for(item of people){
                 if(person == item.id){
+                    let tableData = document.createElement('td')
+                    tableData.style.textAlign='center'
+                    tableData.setAttribute('id', i)
                     let img = document.createElement('img')
-                    img.setAttribute('id', item.id)
                     img.setAttribute('src', item.image)
                     img.setAttribute('alt', item.name)
                     img.setAttribute('title', item.name)
@@ -213,37 +212,48 @@ function readProduct(){
                     img.setAttribute('height', 50)
                     img.addEventListener('click', readPerson)
                     img.style.cursor = 'pointer'
-                    footer.appendChild(img)
+                    tableData.appendChild(img)
+                    row.appendChild(tableData)
                     break
                 }
+                i+=1
             }
         }
+        tablaPersonas.appendChild(row)
+        footer.appendChild(tablaPersonas)
     }
     else{
         footer.innerHTML+='<p>(Vacío)<p>'
     }
 
-    let entitiesTitle = document.createElement('h2')
-    entitiesTitle.appendChild(document.createTextNode('Entities'))
-    footer.appendChild(entitiesTitle)
+    footer.innerHTML+='<h2 style="text-align: center;">Entidades<h2>'
     if(elemento.entities.length!=0){
+        let i = 0
+        let tablaEntidades = document.createElement('table')
+        let row = document.createElement('tr')
         for(entity of elemento.entities){
             for(item of entities){
                 if(entity == item.id){
+                    let tableData = document.createElement('td')
+                    tableData.style.textAlign='center'
+                    tableData.setAttribute('id', i)
                     let img = document.createElement('img')
-                    img.setAttribute('id', item.id)
                     img.setAttribute('src', item.image)
                     img.setAttribute('alt', item.name)
                     img.setAttribute('title', item.name)
                     img.setAttribute('width', 50)
                     img.setAttribute('height', 50)
-                    img.addEventListener('click', readEntity)
+                    img.addEventListener('click', readPerson)
                     img.style.cursor = 'pointer'
-                    footer.appendChild(img)
+                    tableData.appendChild(img)
+                    row.appendChild(tableData)
                     break
                 }
+                i+=1
             }
         }
+        tablaEntidades.appendChild(row)
+        footer.appendChild(tablaEntidades)
     }
     else{
         footer.innerHTML+='<p>(Vacío)<p>'
@@ -252,37 +262,30 @@ function readProduct(){
 }
 
 function readPerson(){
-    let elemento
-    for(item of people){
-        if(item.id == this.id){
-            elemento=item
-            break
-        }
-    }
+    let elemento = people[this.parentElement.id]
+
     readElement(elemento)
 }
 
 function readEntity(){
-    let elemento
-    for(item of entities){
-        if(item.id == this.id){
-            elemento=item
-            break
-        }
-    }
+    let elemento = entities[this.parentElement.id]
+
     readElement(elemento)
 
     let main = document.getElementsByTagName('main')[0]
     let footer = document.createElement('footer')
-    let peopleTitle = document.createElement('h2')
-    peopleTitle.appendChild(document.createTextNode('People'))
-    footer.appendChild(peopleTitle)
+    footer.innerHTML='<h2 style="text-align: center;">Personas<h2>'
     if(elemento.people.length!=0){
+        let i = 0
+        let tablaPersonas = document.createElement('table')
+        let row = document.createElement('tr')
         for(person of elemento.people){
             for(item of people){
                 if(person == item.id){
+                    let tableData = document.createElement('td')
+                    tableData.style.textAlign='center'
+                    tableData.setAttribute('id', i)
                     let img = document.createElement('img')
-                    img.setAttribute('id', item.id)
                     img.setAttribute('src', item.image)
                     img.setAttribute('alt', item.name)
                     img.setAttribute('title', item.name)
@@ -290,11 +293,15 @@ function readEntity(){
                     img.setAttribute('height', 50)
                     img.addEventListener('click', readPerson)
                     img.style.cursor = 'pointer'
-                    footer.appendChild(img)
+                    tableData.appendChild(img)
+                    row.appendChild(tableData)
                     break
                 }
+                i+=1
             }
         }
+        tablaPersonas.appendChild(row)
+        footer.appendChild(tablaPersonas)
     }
     else{
         footer.innerHTML+='<p>(Vacío)<p>'
