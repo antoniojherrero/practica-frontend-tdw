@@ -32,7 +32,7 @@ if(!window.localStorage.getItem("users")){
     window.localStorage.setItem("products", products)
   }
   if(!window.localStorage.getItem("creators")){
-    let creators = JSON.stringify([
+    let people = JSON.stringify([
       {
         id: 1,
         name: "Vannervar Bush",
@@ -50,7 +50,7 @@ if(!window.localStorage.getItem("users")){
         wiki: "https://es.wikipedia.org/wiki/Tim_Berners-Lee"
       }
     ])
-    window.localStorage.setItem("creators", creators)
+    window.localStorage.setItem("people", people)
   }
   if(!window.localStorage.getItem("entities")){
     let entities = JSON.stringify([

@@ -57,6 +57,10 @@ ul{
 .elemName{
 	cursor: pointer !important;
 }
+.elemName:hover{
+	text-decoration: underline;
+	background-color: rgb(64, 64, 64);
+}
 a:link {
 	color: blue;
 	background-color: transparent;

@@ -1,14 +1,14 @@
 let writer = true
 
 let products = []
-let creators = []
+let people = []
 let entities = []
 
 if(window.localStorage.getItem('products')){
     products=JSON.parse(window.localStorage.getItem('products'))
 }
-if(window.localStorage.getItem('creators')){
-    creators=JSON.parse(window.localStorage.getItem('creators'))
+if(window.localStorage.getItem('people')){
+    people=JSON.parse(window.localStorage.getItem('people'))
 }
 if(window.localStorage.getItem('entities')){
     entities=JSON.parse(window.localStorage.getItem('entities'))
@@ -29,69 +29,79 @@ function printData(data,title){
         td.appendChild(document.createTextNode('(Vacio)'))
         row.appendChild(td)
         tbody.appendChild(row)
+        tabla.appendChild(caption)
         tabla.appendChild(tbody)
         section.appendChild(tabla)
-        return section
     }
-    let i = 0
-    for(let item of data){
-        let row = document.createElement('tr')
-        let tableData = document.createElement('td')
-        
-        let image = document.createElement('img')
-        image.setAttribute("src", item.image)
-        image.setAttribute("width", 25)
-        image.setAttribute("heigth", 25)
-        tableData.appendChild(image)
-        row.appendChild(tableData)
+    else{
+        let i = 0
+        for(let item of data){
+            let row = document.createElement('tr')
+            row.setAttribute('id', i)
+            let tableData = document.createElement('td')
+            
+            let image = document.createElement('img')
+            image.setAttribute("src", item.image)
+            image.setAttribute("width", 25)
+            image.setAttribute("height", 25)
+            tableData.appendChild(image)
+            row.appendChild(tableData)
 
-        tableData = document.createElement('td')
-        tableData.setAttribute('id', item.id)
-        tableData.setAttribute('class', 'elemName')
-        tableData.setAttribute('index',i)
-        
-        if(title.toLowerCase()==='products'){
-            tableData.addEventListener('click',readProduct)
-        }
-        if(title.toLowerCase()==='creators'){
-            tableData.addEventListener('click',readCreators)
-        }
-        if(title.toLowerCase()==='entities'){
-            tableData.addEventListener('click',readEntity)
-        }
+            tableData = document.createElement('td')
+            tableData.setAttribute('id', item.id)
+            tableData.setAttribute('class', 'elemName')
+            
+            if(data == products){ tableData.addEventListener('click',readProduct) }
+            if(data == people){ tableData.addEventListener('click',readPerson)}
+            if(data == entities){ tableData.addEventListener('click',readEntity)  }
 
-        let name = document.createTextNode(item.name)
-        tableData.appendChild(name)
-        row.appendChild(tableData)
+            let name = document.createTextNode(item.name)
+            tableData.appendChild(name)
+            row.appendChild(tableData)
 
-        if(writer){
-            let formCell = document.createElement('td')
-            let form = document.createElement('form')
-            let deleteBtn = document.createElement('input')
-            deleteBtn.setAttribute('type','button')
-            deleteBtn.setAttribute('value', 'delete')
-            form.appendChild(deleteBtn)
-            formCell.appendChild(form)
-            row.appendChild(formCell)
+            if(writer){
+                let formCell = document.createElement('td')
+                let deleteBtn = document.createElement('input')
+                deleteBtn.setAttribute('type','button')
+                deleteBtn.setAttribute('value', 'Eliminar')
+                let modifyBtn = document.createElement('input')
+                modifyBtn.setAttribute('type', 'button')
+                modifyBtn.setAttribute('value', 'Editar')
+                if(data == products){
+                    deleteBtn.addEventListener('click', deleteProduct)
+                    modifyBtn.addEventListener('click', updateProduct)
+                }
+                if(data == people){
+                    deleteBtn.addEventListener('click', deletePerson)
+                    modifyBtn.addEventListener('click', updatePerson)
+                }
+                if(data == entities){
+                    deleteBtn.addEventListener('click', deleteEntity)
+                    modifyBtn.addEventListener('click', updateEntity)
+                }
+                formCell.appendChild(modifyBtn)
+                formCell.appendChild(deleteBtn)
+                row.appendChild(formCell)
+            }
+
+            tbody.appendChild(row)
+            i++
         }
-
-        tbody.appendChild(row)
-        i++
+        tabla = section.getElementsByTagName('table')[0]
+        tabla.appendChild(caption)
+        tabla.appendChild(tbody)
     }
-    tabla = section.getElementsByTagName('table')[0]
-    tabla.appendChild(caption)
-    tabla.appendChild(tbody)
 
     if(writer){
         form = document.createElement('form')
-        if(title.toLowerCase() === 'products'){
-            form.innerHTML='<input type="button" name="createProduct" value="create" onclick="crearProducto();">'
+        if(data == products){
+            form.innerHTML='<input type="button" name="createProduct" value="Crear" onclick="crearProducto();">'
         }
-        if(title.toLowerCase() === 'creators'){
-            form.innerHTML='<input type="button" name="createCreator" value="create" onclick="crearCreador();">'
+        if(data == people){
+            form.innerHTML='<input type="button" name="createPerson" value="Crear" onclick="crearPersona();">'
         }
-        if(title.toLowerCase() === 'entities'){
-            form.innerHTML='<input type="button" name="createEntity" value="create" onclick="crearEntidad();">'
+        if(data == entities){
+            form.innerHTML='<input type="button" name="createEntity" value="Crear" onclick="crearEntidad();">'
         }
         section.appendChild(form)
     }
@@ -120,9 +130,9 @@ function readIndex(){
         
     let main = document.getElementsByTagName('main')[0]
     main.innerHTML=''
-    main.appendChild(printData(products,'Products'))
-    main.appendChild(printData(creators,'Creators'))
-    main.appendChild(printData(entities,'Entities'))
+    main.appendChild(printData(products,'Productos'))
+    main.appendChild(printData(people,'Personas'))
+    main.appendChild(printData(entities,'Entidades'))
 }
 
 function LogIn() {
@@ -192,7 +202,7 @@ function readProduct(){
     footer.appendChild(peopleTitle)
     if(elemento.people.length!=0){
         for(person of elemento.people){
-            for(item of creators){
+            for(item of people){
                 if(person == item.id){
                     let img = document.createElement('img')
                     img.setAttribute('id', item.id)
@@ -201,7 +211,7 @@ function readProduct(){
                     img.setAttribute('title', item.name)
                     img.setAttribute('width', 50)
                     img.setAttribute('height', 50)
-                    img.addEventListener('click', readCreators)
+                    img.addEventListener('click', readPerson)
                     img.style.cursor = 'pointer'
                     footer.appendChild(img)
                     break
@@ -241,9 +251,9 @@ function readProduct(){
     main.appendChild(footer)
 }
 
-function readCreators(){
+function readPerson(){
     let elemento
-    for(item of creators){
+    for(item of people){
         if(item.id == this.id){
             elemento=item
             break
@@ -269,7 +279,7 @@ function readEntity(){
     footer.appendChild(peopleTitle)
     if(elemento.people.length!=0){
         for(person of elemento.people){
-            for(item of creators){
+            for(item of people){
                 if(person == item.id){
                     let img = document.createElement('img')
                     img.setAttribute('id', item.id)
@@ -278,7 +288,7 @@ function readEntity(){
                     img.setAttribute('title', item.name)
                     img.setAttribute('width', 50)
                     img.setAttribute('height', 50)
-                    img.addEventListener('click', readCreators)
+                    img.addEventListener('click', readPerson)
                     img.style.cursor = 'pointer'
                     footer.appendChild(img)
                     break
@@ -309,7 +319,7 @@ function create(title){
     if(title==='Producto'){
         funcionSubmit='editProduct(this);'
     }
-    else if(title==='Creador'){
+    else if(title==='Persona'){
         funcionSubmit='editPerson(this);'
     }
     else if(title==='Entidad'){
@@ -317,7 +327,7 @@ function create(title){
     }
     section.innerHTML='<form id="creationForm" onsubmit="'+funcionSubmit+'">'+
     '<fieldset>'+
-    '<legend>Nuevo '+title+'</legend>'+
+    '<legend>Crear '+title+'</legend>'+
     '<label for="name">Nombre: </label>'+
     '<input type="text" id="name" name="Name" value="" required><br><br>'+
     '<label for="birth">Nacimiento: </label>'+
@@ -342,7 +352,7 @@ function crearProducto(){
     fieldset.innerHTML+='<h3 style="text-align: left; color: yellow;">Participantes<h3>'
     let peopleList = document.createElement('ul')
     peopleList.setAttribute('id','peopleList')
-    for(person of creators){
+    for(person of people){
         let listItem = document.createElement('li')
         listItem.setAttribute('id', person.id)
         let label = document.createElement('label')
@@ -378,14 +388,36 @@ function crearProducto(){
     fieldset.innerHTML+='<input type="submit" value="Enviar";">'
 }
 
-function crearCreador(){
-    create('Creador')
+function crearPersona(){
+    create('Persona')
     let fieldset = document.getElementsByTagName('fieldset')[0]
     fieldset.innerHTML+='<input type="submit" value="Enviar";">'
 }
 
 function crearEntidad(){
     create('Entidad')
+
+    let fieldset = document.getElementsByTagName('fieldset')[0]
+
+    fieldset.innerHTML+='<h3 style="text-align: left; color: yellow;">Participantes<h3>'
+    let peopleList = document.createElement('ul')
+    peopleList.setAttribute('id','peopleList')
+    for(person of people){
+        let listItem = document.createElement('li')
+        listItem.setAttribute('id', person.id)
+        let label = document.createElement('label')
+        label.setAttribute('for', person.id)
+        label.appendChild(document.createTextNode(person.name))
+        let checkbox = document.createElement('input')
+        checkbox.setAttribute('id', person.id)
+        checkbox.setAttribute('type','checkbox')
+        listItem.appendChild(label)
+        listItem.appendChild(checkbox)
+        peopleList.appendChild(listItem)
+    }
+    fieldset.appendChild(peopleList)
+
+    fieldset.innerHTML+='<input type="submit" value="Enviar";">'
 }
 
 function editProduct(form){
@@ -419,17 +451,79 @@ function editProduct(form){
 
 function editPerson(form){
     let fieldset=form.getElementsByTagName('fieldset')[0]
-    creators[creators.length] = {
-        id: products[creators.length-1].id+1,
+    people[people.length] = {
+        id: products[people.length-1].id+1,
         name: fieldset.getElementsByTagName('input')[0].value,
         birth: fieldset.getElementsByTagName('input')[1].value,
         death: fieldset.getElementsByTagName('input')[2].value,
         image: fieldset.getElementsByTagName('input')[3].value,
         wiki: fieldset.getElementsByTagName('input')[4].value,
     }
-    window.localStorage.setItem('creators', JSON.stringify(creators))
+    window.localStorage.setItem('people', JSON.stringify(people))
 }
 
 function editEntity(form){
+    let fieldset=form.getElementsByTagName('fieldset')[0]
+    let peopleList = document.getElementById('peopleList')
+    let checkedPeople = []
+    for(item of peopleList.getElementsByTagName('li')){
+        if(item.getElementsByTagName('input')[0].checked){
+            checkedPeople[checkedPeople.length]= +item.id
+        }
+    }
+    entities[entities.length] = {
+        id: entities[entities.length-1].id+1,
+        name: fieldset.getElementsByTagName('input')[0].value,
+        birth: fieldset.getElementsByTagName('input')[1].value,
+        death: fieldset.getElementsByTagName('input')[2].value,
+        image: fieldset.getElementsByTagName('input')[3].value,
+        wiki: fieldset.getElementsByTagName('input')[4].value,
+        people: checkedPeople,
+    }
+    window.localStorage.setItem('entities', JSON.stringify(entities))
+}
+
+function deleteProduct(){
+    let indice = +this.parentElement.parentElement.id
     
+    if(window.confirm('Eliminar definitivamente el producto: '+products[indice].name)){
+        delete products[indice]
+        products = products.filter(Boolean)
+        window.localStorage.setItem('products', JSON.stringify(products))
+    }
+    readIndex()
+}
+
+function deletePerson(){
+    let indice = +this.parentElement.parentElement.id
+    
+    if(window.confirm('Eliminar definitivamente la persona: '+people[indice].name)){
+        delete people[indice]
+        people = people.filter(Boolean)
+        window.localStorage.setItem('people', JSON.stringify(people))
+    }
+    readIndex()
+}
+function deleteEntity(){
+    let indice = +this.parentElement.parentElement.id
+    
+    if(window.confirm('Eliminar definitivamente la entidad: '+entities[indice].name)){
+        delete entities[indice]
+        entities = entities.filter(Boolean)
+        window.localStorage.setItem('entities', JSON.stringify(entities))
+    }
+    readIndex()
+}
+
+function updateProduct(){
+    let elemento = products[this.parentElement.parentElement.id]
+    console.log(elemento)
+}
+
+function updatePerson(){
+
+}
+
+function updateEntity(){
+
 }
