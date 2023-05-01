@@ -28,14 +28,13 @@ function buildDataSection(data,title){
         section.appendChild(tabla)
     }
     else{
-        let i = 0
-        for(let item of data){
+        for(let i = 0; i<data.length;i++){
             let row = document.createElement('tr')
             row.setAttribute('id', i)
             let tableData = document.createElement('td')
             
             let image = document.createElement('img')
-            image.setAttribute("src", item.image)
+            image.setAttribute("src", data[i].image)
             image.setAttribute("width", 25)
             image.setAttribute("height", 25)
             tableData.appendChild(image)
@@ -48,7 +47,7 @@ function buildDataSection(data,title){
             if(data == people){ tableData.addEventListener('click',readPerson)}
             if(data == entities){ tableData.addEventListener('click',readEntity)  }
 
-            let name = document.createTextNode(item.name)
+            let name = document.createTextNode(data[i].name)
             tableData.appendChild(name)
             row.appendChild(tableData)
 
@@ -78,7 +77,6 @@ function buildDataSection(data,title){
             }
 
             tbody.appendChild(row)
-            i++
         }
         tabla = section.getElementsByTagName('table')[0]
         tabla.appendChild(caption)
@@ -104,15 +102,12 @@ function buildDataSection(data,title){
 function readIndex(){
     let loginForm = document.createElement('login')
     if(!writer){
-        loginForm.innerHTML = '<label for="user">Usuario</label>'
-        loginForm.innerHTML+= ' '
-        loginForm.innerHTML+= '<input id="user" type="text" name="user"/>'
-        loginForm.innerHTML+= ' '
-        loginForm.innerHTML+= '<label for="passwd">Contraseña</label>'
-        loginForm.innerHTML+= ' '
-        loginForm.innerHTML+= '<input id="passwd" type="password" name="passwd"/>'
-        loginForm.innerHTML+= ' '
-        loginForm.innerHTML+= '<input type="button" name="login" value="Iniciar Sesión" onclick="LogIn();"/>'
+        loginForm.innerHTML = 
+        '<label for="user">Usuario</label> '+
+        '<input id="user" type="text" name="user"/> '+
+        '<label for="passwd">Contraseña</label> '+
+        '<input id="passwd" type="password" name="passwd"/> '+
+        '<input type="button" name="login" value="Iniciar Sesión" onclick="LogIn();"/>'
     }
     else{
         loginForm.innerHTML = '<input type="button" name="logout" value="Cerrar Sesión" onclick="LogOut();"/>'
@@ -161,12 +156,12 @@ function readElement(elemento){
     let main = document.getElementsByTagName('main')[0]
     let birthday = new Date(elemento.birth)
     let deathday = new Date(elemento.death)
-    death = !(deathday == 'Invalid Date') ? '<h3>Fallecimiento: '+deathday.getDay()+' de '+(deathday.toLocaleString('default', { month: 'long' }))+' de '+deathday.getFullYear()+'</h3>':''
+    death = !(deathday == 'Invalid Date') ? '<h3>Fallecimiento: '+deathday.getUTCDate()+' de '+(deathday.toLocaleString('default', { month: 'long' }))+' de '+deathday.getFullYear()+'</h3>':''
     main.innerHTML=''
     main.innerHTML=
     '<section style="width: 40%;">'+
         '<h2>'+elemento.name+'</h2>'+
-        '<h3>Nacimiento: '+birthday.getDay()+' de '+birthday.toLocaleString('default', { month: 'long' })+' de '+birthday.getFullYear()+'</h3>'+
+        '<h3>Nacimiento: '+birthday.getUTCDate()+' de '+birthday.toLocaleString('default', { month: 'long' })+' de '+birthday.getFullYear()+'</h3>'+
         death+
         '<img src="'+elemento.image+'" alt="'+elemento.name+'" width="300" height="250">'+
         '<div><table id="productos" style="margin: 0px;">'+
@@ -458,13 +453,20 @@ function editProduct(form){
 
 function editPerson(form){
     let fieldset=form.getElementsByTagName('fieldset')[0]
-    people[people.length] = {
-        id: products[people.length-1].id+1,
+    persona = {
+        id: Math.floor(Math.random()*Date.now()/100000000),
         name: fieldset.getElementsByTagName('input')[0].value,
         birth: fieldset.getElementsByTagName('input')[1].value,
         death: fieldset.getElementsByTagName('input')[2].value,
         image: fieldset.getElementsByTagName('input')[3].value,
         wiki: fieldset.getElementsByTagName('input')[4].value,
+    }
+    if(fieldset.id){
+        persona.id=people[+fieldset.id].id
+        people[+fieldset.id] = persona
+    }
+    else{
+        people[people.length] = persona
     }
     window.localStorage.setItem('people', JSON.stringify(people))
 }
@@ -478,7 +480,7 @@ function editEntity(form){
             checkedPeople[checkedPeople.length]= +item.id
         }
     }
-    entities[entities.length] = {
+    entidad = {
         id: entities[entities.length-1].id+1,
         name: fieldset.getElementsByTagName('input')[0].value,
         birth: fieldset.getElementsByTagName('input')[1].value,
@@ -486,6 +488,13 @@ function editEntity(form){
         image: fieldset.getElementsByTagName('input')[3].value,
         wiki: fieldset.getElementsByTagName('input')[4].value,
         people: checkedPeople,
+    }
+    if(fieldset.id){
+        entidad.id=entities[+fieldset.id].id
+        entities[+fieldset.id] = entidad
+    }
+    else{
+        entities[people.length] = entidad
     }
     window.localStorage.setItem('entities', JSON.stringify(entities))
 }
@@ -602,7 +611,9 @@ function updateProduct(){
         entitiesList.appendChild(listItem)
     }
     fieldset.appendChild(entitiesList)
+    
     fieldset.innerHTML+='<input type="submit" value="Enviar">'
+    
     for(item of document.getElementById('peopleList').children){
         for(person of elemento.people){
             if(person==item.children[1].id){
@@ -625,12 +636,42 @@ function updatePerson(){
     let indice = +this.parentElement.parentElement.id
     let type = this.parentElement.parentElement.parentElement.id
     let elemento = people[indice]
-    update(elemento,type)
+    update(elemento,type,indice)
+    let fieldset = document.getElementsByTagName('fieldset')[0]
+    fieldset.innerHTML+='<input type="submit" value="Enviar";">'
 }
 
 function updateEntity(){
     let indice = +this.parentElement.parentElement.id
     let type = this.parentElement.parentElement.parentElement.id
     let elemento = entities[indice]
-    update(elemento,type)
+    update(elemento,type,indice)
+
+    let fieldset = document.getElementsByTagName('fieldset')[0]
+
+    fieldset.innerHTML+='<h3 style="text-align: left; color: yellow;">Participantes</h3>'
+    let peopleList = document.createElement('ul')
+    peopleList.setAttribute('id','peopleList')
+    for(person of people){
+        let listItem = document.createElement('li')
+        listItem.setAttribute('id', person.id)
+        listItem.innerHTML='<label for="'+person.id+'">'+person.name+'</label>'
+        let checkbox = document.createElement('input')
+        checkbox.setAttribute('id', person.id)
+        checkbox.setAttribute('type','checkbox')
+        listItem.appendChild(checkbox)
+        peopleList.appendChild(listItem)
+    }
+    fieldset.appendChild(peopleList)
+
+    fieldset.innerHTML+='<input type="submit" value="Enviar">'
+    
+    for(item of document.getElementById('peopleList').children){
+        for(person of elemento.people){
+            if(person==item.children[1].id){
+                item.children[1].checked=true
+                break
+            }
+        }
+    }
 }
