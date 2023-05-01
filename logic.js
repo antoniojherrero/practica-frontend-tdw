@@ -4,24 +4,18 @@ let products = []
 let people = []
 let entities = []
 
-if(window.localStorage.getItem('products')){
-    products=JSON.parse(window.localStorage.getItem('products'))
-}
-if(window.localStorage.getItem('people')){
-    people=JSON.parse(window.localStorage.getItem('people'))
-}
-if(window.localStorage.getItem('entities')){
-    entities=JSON.parse(window.localStorage.getItem('entities'))
-}
+if(window.localStorage.getItem('products')){ products=JSON.parse(window.localStorage.getItem('products')) }
+if(window.localStorage.getItem('people'))  { people=JSON.parse(window.localStorage.getItem('people')) }
+if(window.localStorage.getItem('entities')){ entities=JSON.parse(window.localStorage.getItem('entities')) }
 
-function printData(data,title){
+function buildDataSection(data,title){
     let section = document.createElement('section')
-    section.innerHTML='<table id='+title.toLowerCase()+'></table>'
+    section.innerHTML='<table></table>'
     
     let caption = document.createElement('caption')
     caption.appendChild(document.createTextNode(title))
     let tbody = document.createElement('tbody')
-    
+    tbody.setAttribute('id', title.toLowerCase())
     if(data.length==0){
         let tabla = section.getElementsByTagName('table')[0]
         let row = document.createElement('tr')
@@ -48,7 +42,6 @@ function printData(data,title){
             row.appendChild(tableData)
 
             tableData = document.createElement('td')
-            tableData.setAttribute('id', item.id)
             tableData.setAttribute('class', 'elemName')
             
             if(data == products){ tableData.addEventListener('click',readProduct) }
@@ -119,10 +112,10 @@ function readIndex(){
         loginForm.innerHTML+= ' '
         loginForm.innerHTML+= '<input id="passwd" type="password" name="passwd"/>'
         loginForm.innerHTML+= ' '
-        loginForm.innerHTML+= '<input type="button" name="login" value="Login" onclick="LogIn();"/>'
+        loginForm.innerHTML+= '<input type="button" name="login" value="Iniciar Sesión" onclick="LogIn();"/>'
     }
     else{
-        loginForm.innerHTML = '<input type="button" name="logout" value="Logout" onclick="LogOut();"/>'
+        loginForm.innerHTML = '<input type="button" name="logout" value="Cerrar Sesión" onclick="LogOut();"/>'
     }
     let nav = document.getElementsByTagName('nav')[0]
     nav.innerHTML=''
@@ -130,9 +123,9 @@ function readIndex(){
         
     let main = document.getElementsByTagName('main')[0]
     main.innerHTML=''
-    main.appendChild(printData(products,'Productos'))
-    main.appendChild(printData(people,'Personas'))
-    main.appendChild(printData(entities,'Entidades'))
+    main.appendChild(buildDataSection(products,'Productos'))
+    main.appendChild(buildDataSection(people,'Personas'))
+    main.appendChild(buildDataSection(entities,'Entidades'))
 }
 
 function LogIn() {
@@ -443,8 +436,8 @@ function editProduct(form){
             checkedEntities[checkedEntities.length]= +item.id
         }
     }
-    products[products.length] = {
-        id: products[products.length-1].id+1,
+    let producto = {
+        id: Math.floor(Math.random()*Date.now()/100000000),
         name: fieldset.getElementsByTagName('input')[0].value,
         birth: fieldset.getElementsByTagName('input')[1].value,
         death: fieldset.getElementsByTagName('input')[2].value,
@@ -452,6 +445,13 @@ function editProduct(form){
         wiki: fieldset.getElementsByTagName('input')[4].value,
         people: checkedPeople,
         entities: checkedEntities
+    }
+    if(fieldset.id){
+        producto.id=products[+fieldset.id].id
+        products[+fieldset.id] = producto
+    }
+    else{
+        products[products.length] = producto
     }
     window.localStorage.setItem('products', JSON.stringify(products))
 }
@@ -522,15 +522,115 @@ function deleteEntity(){
     readIndex()
 }
 
+function update(elemento,type,indice){
+    let nav = document.getElementsByTagName('nav')[0]
+    nav.innerHTML=''
+    nav.innerHTML='<input type="button" name="cancel" value="Cancel" onclick="readIndex();">'
+    let main = document.getElementsByTagName('main')[0]
+    main.innerHTML=''
+    let section = document.createElement('section')
+    section.style.width='25%'
+    section.style.maxWidth='50%'
+    section.style.marginLeft='37.5%'
+    section.style.textAlign='center'
+    section.style.borderStyle='solid'
+    section.style.borderWidth='medium'
+    let funcionSubmit=''
+    if(type==='productos'){
+        funcionSubmit='editProduct(this);'
+    }
+    else if(type==='personas'){
+        funcionSubmit='editPerson(this);'
+    }
+    else if(type==='entidades'){
+        funcionSubmit='editEntity(this);'
+    }
+    section.innerHTML='<form id="editForm" onsubmit="'+funcionSubmit+'">'+
+    '<fieldset id="'+indice+'">'+
+    '<legend>Editar '+elemento.name+'</legend>'+
+    '<label for="name">Nombre: </label>'+
+    '<input type="text" id="name" name="Name" value="'+elemento.name+'" required><br><br>'+
+    '<label for="birth">Nacimiento: </label>'+
+    '<input type="date" id="birth" name="Birth" value="'+elemento.birth+'" required><br><br>'+
+    '<label for="death">Fallecimiento: </label>'+
+    '<input type="date" id="death" name="Death" value="'+elemento.death+'"><br><br>'+
+    '<label for="image">URL Imagen: </label>'+
+    '<input type="url" id="image" name="Image" value="'+elemento.image+'" required><br><br>'+
+    '<label for="wiki">URL wiki: </label>'+
+    '<input type="url" id="wiki" name="Wiki" value="'+elemento.wiki+'" required><br><br>'+
+    '</fieldset>'+
+    '</form>'
+
+    main.appendChild(section)
+}
+
 function updateProduct(){
-    let elemento = products[this.parentElement.parentElement.id]
-    console.log(elemento)
+    let indice = +this.parentElement.parentElement.id
+    let type = this.parentElement.parentElement.parentElement.id
+    let elemento = products[indice]
+    update(elemento,type,indice)
+
+    let fieldset = document.getElementsByTagName('fieldset')[0]
+
+    fieldset.innerHTML+='<h3 style="text-align: left; color: yellow;">Participantes</h3>'
+    let peopleList = document.createElement('ul')
+    peopleList.setAttribute('id','peopleList')
+    for(person of people){
+        let listItem = document.createElement('li')
+        listItem.setAttribute('id', person.id)
+        listItem.innerHTML='<label for="'+person.id+'">'+person.name+'</label>'
+        let checkbox = document.createElement('input')
+        checkbox.setAttribute('id', person.id)
+        checkbox.setAttribute('type','checkbox')
+        listItem.appendChild(checkbox)
+        peopleList.appendChild(listItem)
+    }
+    fieldset.appendChild(peopleList)
+    
+    fieldset.innerHTML+='<h3 style="text-align: left; color: yellow;">Entidades colaboradoras</h3>'
+    let entitiesList = document.createElement('ul')
+    entitiesList.setAttribute('id','entitiesList')
+    for(entity of entities){
+        let listItem = document.createElement('li')
+        listItem.setAttribute('id', entity.id)
+        listItem.innerHTML='<label for="'+entity.id+'">'+entity.name+'</label>'
+        let checkbox = document.createElement('input')
+        checkbox.setAttribute('id', entity.id)
+        checkbox.setAttribute('type','checkbox')
+        let encontrado = false
+        listItem.appendChild(checkbox)
+        entitiesList.appendChild(listItem)
+    }
+    fieldset.appendChild(entitiesList)
+    fieldset.innerHTML+='<input type="submit" value="Enviar">'
+    for(item of document.getElementById('peopleList').children){
+        for(person of elemento.people){
+            if(person==item.children[1].id){
+                item.children[1].checked=true
+                break
+            }
+        }
+    }
+    for(item of document.getElementById('entitiesList').children){
+        for(entity of elemento.entities){
+            if(entity == item.children[1].id){
+                item.children[1].checked=true
+                break
+            }
+        }
+    }
 }
 
 function updatePerson(){
-
+    let indice = +this.parentElement.parentElement.id
+    let type = this.parentElement.parentElement.parentElement.id
+    let elemento = people[indice]
+    update(elemento,type)
 }
 
 function updateEntity(){
-
+    let indice = +this.parentElement.parentElement.id
+    let type = this.parentElement.parentElement.parentElement.id
+    let elemento = entities[indice]
+    update(elemento,type)
 }
