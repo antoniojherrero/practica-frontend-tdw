@@ -4,6 +4,7 @@ let products = []
 let people = []
 let entities = []
 
+if(window.sessionStorage.getItem('writer')){ writer=JSON.parse(window.sessionStorage.getItem('writer'))}
 if(window.localStorage.getItem('products')){ products=JSON.parse(window.localStorage.getItem('products')) }
 if(window.localStorage.getItem('people'))  { people=JSON.parse(window.localStorage.getItem('people')) }
 if(window.localStorage.getItem('entities')){ entities=JSON.parse(window.localStorage.getItem('entities')) }
@@ -136,6 +137,7 @@ function LogIn() {
     }
     if(encontrado){
       writer=true
+      window.sessionStorage.setItem('writer', writer)
       readIndex()
     }
     else{
@@ -145,6 +147,7 @@ function LogIn() {
 
 function LogOut(){
     writer=false
+    window.sessionStorage.setItem('writer', writer)
     readIndex()
 }
 
