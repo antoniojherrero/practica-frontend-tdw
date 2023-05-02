@@ -1,4 +1,4 @@
-let writer = true
+let writer = false
 
 let products = []
 let people = []
@@ -180,72 +180,77 @@ function readProduct(){
 
     let main = document.getElementsByTagName('main')[0]
     let footer = document.createElement('footer')
-    footer.style.float='left'
-    footer.innerHTML='<h2 style="text-align: center;">Personas<h2>'
-    if(elemento.people.length!=0){
-        let i = 0
-        let tablaPersonas = document.createElement('table')
-        let row = document.createElement('tr')
-        for(person of elemento.people){
-            for(item of people){
-                if(person == item.id){
-                    let tableData = document.createElement('td')
-                    tableData.style.textAlign='center'
-                    tableData.setAttribute('id', i)
-                    let img = document.createElement('img')
-                    img.setAttribute('src', item.image)
-                    img.setAttribute('alt', item.name)
-                    img.setAttribute('title', item.name)
-                    img.setAttribute('width', 50)
-                    img.setAttribute('height', 50)
-                    img.addEventListener('click', readPerson)
-                    img.style.cursor = 'pointer'
-                    tableData.appendChild(img)
-                    row.appendChild(tableData)
-                    break
-                }
-                i+=1
-            }
-        }
-        tablaPersonas.appendChild(row)
-        footer.appendChild(tablaPersonas)
-    }
-    else{
-        footer.innerHTML+='<p>(Vacío)<p>'
-    }
+    let tablaPersonas = document.createElement('table')
+    let caption = document.createElement('caption')
 
-    footer.innerHTML+='<h2 style="text-align: center;">Entidades<h2>'
+    footer.style.float='left'
+    tablaPersonas.style.margin="0px"
+    caption.innerHTML='Personas'
+    tablaPersonas.appendChild(caption)
+
+    let row = document.createElement('tr')
+    if(elemento.people.length!=0){
+        for(person of elemento.people){
+            for(let i = 0; i<people.length; i++){
+                if(person == people[i].id){
+                    let tableData = document.createElement('td')
+                    tableData.style.textAlign='center'
+                    tableData.setAttribute('id', i)
+                    let personImg = document.createElement('img')
+                    personImg.setAttribute('src', people[i].image)
+                    personImg.setAttribute('alt', people[i].name)
+                    personImg.setAttribute('title', people[i].name)
+                    personImg.setAttribute('width', 50)
+                    personImg.setAttribute('height', 50)
+                    personImg.addEventListener('click', readPerson)
+                    personImg.style.cursor = 'pointer'
+                    tableData.appendChild(personImg)
+                    row.appendChild(tableData)
+                    break
+                }
+            }
+        }
+    }
+    else{
+        row.innerHTML+='<td>(Vacío)</td>'
+    }
+    tablaPersonas.appendChild(row)
+    footer.appendChild(tablaPersonas)
+
+    let tablaEntidades = document.createElement('table')
+    tablaEntidades.style.margin='0px'
+    caption = document.createElement('caption')
+    caption.innerHTML='Entidades'
+    tablaEntidades.appendChild(caption)
+    row = document.createElement('tr')
     if(elemento.entities.length!=0){
-        let i = 0
-        let tablaEntidades = document.createElement('table')
-        let row = document.createElement('tr')
         for(entity of elemento.entities){
-            for(item of entities){
-                if(entity == item.id){
+            for(let i = 0; i<entities.length; i++){
+                if(entity == entities[i].id){
                     let tableData = document.createElement('td')
                     tableData.style.textAlign='center'
                     tableData.setAttribute('id', i)
                     let img = document.createElement('img')
-                    img.setAttribute('src', item.image)
-                    img.setAttribute('alt', item.name)
-                    img.setAttribute('title', item.name)
+                    img.setAttribute('src', entities[i].image)
+                    img.setAttribute('alt', entities[i].name)
+                    img.setAttribute('title', entities[i].name)
                     img.setAttribute('width', 50)
                     img.setAttribute('height', 50)
-                    img.addEventListener('click', readPerson)
+                    img.addEventListener('click', readEntity)
                     img.style.cursor = 'pointer'
                     tableData.appendChild(img)
                     row.appendChild(tableData)
                     break
                 }
-                i+=1
             }
         }
-        tablaEntidades.appendChild(row)
-        footer.appendChild(tablaEntidades)
     }
     else{
-        footer.innerHTML+='<p>(Vacío)<p>'
+        row.innerHTML+='<td>(Vacío)</td>'
     }
+    tablaEntidades.appendChild(row)
+    footer.appendChild(tablaEntidades)
+
     main.appendChild(footer)
 }
 
@@ -262,7 +267,7 @@ function readEntity(){
 
     let main = document.getElementsByTagName('main')[0]
     let footer = document.createElement('footer')
-    footer.innerHTML='<h2 style="text-align: center;">Personas<h2>'
+    footer.innerHTML='<h2 style="text-align: center;">Personas</h2>'
     if(elemento.people.length!=0){
         let i = 0
         let tablaPersonas = document.createElement('table')
@@ -292,7 +297,7 @@ function readEntity(){
         footer.appendChild(tablaPersonas)
     }
     else{
-        footer.innerHTML+='<p>(Vacío)<p>'
+        footer.innerHTML+='<p>(Vacío)</p>'
     }
     main.appendChild(footer)
 }
